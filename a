@@ -1,0 +1,13 @@
+#include <iostream>
+using namespace std;
+
+void mesajYaz(){
+for(int i=1; i<=61; i++)
+  cout<<"Selam"<<i<<" Ben Ömürcan"<<endl;
+}
+
+int main(){
+mesajYaz();
+
+return 0;
+}
