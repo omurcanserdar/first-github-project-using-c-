@@ -23,7 +23,7 @@ else{
 }
 
 int main(){
-    setlocale(LC_ALL, "Turkish"); //türkçe karakter için
+setlocale(LC_ALL, "Turkish"); //türkçe karakter için
 mesajYaz();
 
 int p;
