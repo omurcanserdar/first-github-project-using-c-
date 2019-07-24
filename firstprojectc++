@@ -22,6 +22,22 @@ else{
     }
 }
 
+void mesajYaz(string params,int param){
+int sayac=1; 
+do{
+	cout<<sayac<<"--"<<params<<endl;
+	sayac++;
+}while(sayac<=param);
+}
+
+void mesajYazWhile(string params,int param){
+int sayac=1; 	
+while(sayac<=param){
+	cout<<sayac<<"--"<<params<<endl;
+	sayac++;
+}
+}
+
 int main(){
 setlocale(LC_ALL, "Turkish"); //türkçe karakter için
 mesajYaz();
@@ -30,6 +46,7 @@ int p;
 cout<<"Kaç defa yazsın ?"<<endl;
 cin>>p;
 mesajYaz(p);
-
+mesajYaz("Merhaba,Ben Ömürcan",61);
+mesajYazWhile("Merhaba,Ben Ömürcan",61);
 return 0;
 }
