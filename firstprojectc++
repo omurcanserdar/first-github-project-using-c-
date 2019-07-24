@@ -1,4 +1,5 @@
 #include <iostream>
+#include<locale.h> //türkçe karakter için
 using namespace std;
 
 void mesajYaz(){
@@ -6,8 +7,29 @@ for(int i=1; i<=61; i++)
   cout<<"Selam"<<i<<" Ben Ömürcan"<<endl;
 }
 
+void mesajYaz(int param){
+	if(param>0){
+	 try{
+  		for(int i=1; i<=param; i++)
+  			cout<<"Selam"<<i<<" Ben Ömürcan"<<endl;
+  		}
+  catch (int e){
+    cout << "Hata Meydana Geldi,hata kodu " << e << '\n';
+               }
+             }
+else{
+	cout<<"0(Sıfır)'dan büyük rakam girmeliydin !";
+    }
+}
+
 int main(){
+    setlocale(LC_ALL, "Turkish"); //türkçe karakter için
 mesajYaz();
+
+int p;
+cout<<"Kaç defa yazsın ?"<<endl;
+cin>>p;
+mesajYaz(p);
 
 return 0;
 }
