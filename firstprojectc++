@@ -1,13 +1,16 @@
 #include <iostream>
-#include<locale.h> //türkçe karakter için
+#include <locale.h> //türkçe karakter için
+#include <string>
+
 using namespace std;
 
 void mesajYaz(){
-for(int i=1; i<=61; i++)
+for(int i=1; i<=10; i++)
   cout<<"Selam"<<i<<" Ben Ömürcan"<<endl;
 }
 
 void mesajYaz(int param){
+	
 	if(param>0){
 	 try{
   		for(int i=1; i<=param; i++)
@@ -15,14 +18,16 @@ void mesajYaz(int param){
   		}
   catch (int e){
     cout << "Hata Meydana Geldi,hata kodu " << e << '\n';
-               }
-             }
-else{
-	cout<<"0(Sıfır)'dan büyük rakam girmeliydin !";
-    }
+  }
+}
+else
+{
+	cout<<"0(Sıfır)'dan büyük rakam giriniz";
+}
 }
 
 void mesajYaz(string params,int param){
+	
 int sayac=1; 
 do{
 	cout<<sayac<<"--"<<params<<endl;
@@ -31,6 +36,7 @@ do{
 }
 
 void mesajYazWhile(string params,int param){
+	
 int sayac=1; 	
 while(sayac<=param){
 	cout<<sayac<<"--"<<params<<endl;
@@ -38,15 +44,42 @@ while(sayac<=param){
 }
 }
 
+
+int topla(){ 
+	int a=5;int b=10;int c=a+b;return c; 
+}
+
+int topla(int a,int b){
+	return a+b;
+}
+
+int faktoriyel(int deger) 
+{ 
+ if(deger==1) 
+ return 1; 
+ else 
+ return deger*faktoriyel(deger-1); 
+}
+
 int main(){
-setlocale(LC_ALL, "Turkish"); //türkçe karakter için
+	setlocale(LC_ALL, "Turkish"); 
 mesajYaz();
 
+asagi:
 int p;
 cout<<"Kaç defa yazsın ?"<<endl;
 cin>>p;
 mesajYaz(p);
-mesajYaz("Merhaba,Ben Ömürcan",61);
-mesajYazWhile("Merhaba,Ben Ömürcan",61);
+mesajYaz("Merhaba,Ben Ömürcan",5);
+mesajYazWhile("Merhaba,Ben Ömürcan - While",5);
+
+cout<<topla()<<endl;
+cout<<topla(15,20)<<endl;
+
+int f;
+cout<<"Hangi Sayının Faktoriyelini Alayım ?"<<endl;
+cin>>f;
+cout<<faktoriyel(f)<<endl;
+
 return 0;
 }
