@@ -1,0 +1,95 @@
+#include <iostream>
+#include <stack> //LIFO push pop top
+#include <string>
+using namespace std;
+
+// temel 4 işlem kontrolü (operatör mü? kontrolü)
+bool operatorMu(char paramKarakter){
+    if (paramKarakter == '+' || paramKarakter == '-' || paramKarakter == '*' || paramKarakter == '/'){
+        return true;
+    }
+    return false;
+}
+
+//karakter operatör veya parantez değilse o zaman operand dır (operand mı? kontrolü)
+bool operandMi(char paramKarakter){
+    if (!operatorMu(paramKarakter) && paramKarakter != '(' && paramKarakter != ')'){
+        return true;
+    }
+    return false;
+}
+
+/* 
+işlem önceliği kontrolü çarpma bölme öncelikli -1,toplama cıkarma öncelikli 1,öncelik yok durumlar eşit 0
+*/
+int operatorKarsilastir(char p_op1, char p_op2){
+    if ((p_op1 == '*' || p_op1 == '/') && (p_op2 == '+' || p_op2 == '-')) { return -1; } 
+    else if ((p_op1 == '+' || p_op1 == '-') && (p_op2 == '*' || p_op2 == '/')) { return 1; } 
+    return 0; 
+}
+
+int main()
+{
+    stack<char> stackDepo;  //push pop top gibi stack işlemleri için kullanılacak karakter türünde stack değişken
+    string postFixifadem=""; //infix işleminin postfix çevrilmiş hali için değişken	
+    char infix[50]; 
+    anaislem: //goto
+	cout << "Bir ifade girin : ";
+    cin >> infix; //infix işlemini konsoldan oku
+    
+    char *k_Ptr=infix; //infix(karakter dizim)i pointer ile işaret et
+
+    //karakterlerin sonuna kadar dön
+    while (*k_Ptr != NULL){
+        //operand ise postfix sonuc değişkenine ekle
+        //operator ise, stack boş olana kadar operatorleri cıkar (pop),açık parantezleri veya önceliği düşük yada eşit operatorleri 
+        if (operandMi(*k_Ptr)){ //okunankarakter bir operand
+		postFixifadem += *k_Ptr; //değişkene direk ekle
+		} 
+        else if (operatorMu(*k_Ptr)){ //okunankarakter operator 
+            while (!stackDepo.empty() && stackDepo.top() != '(' && operatorKarsilastir(stackDepo.top(),*k_Ptr) <= 0){ //0 öncelik yok,-1 çarpmabölme,1 toplamacikarma
+				//stack boş değil -top daki eleman aç parantez değilse ve karşılaştırılan operatörlerde öncelik söz konusu olduğunda
+                postFixifadem +=stackDepo.top();//postfix stringime stacktan yaz (top ile)
+                stackDepo.pop();//yazdığımı çıkar pop ile
+            }
+            stackDepo.push(*k_Ptr); //Stack 'e okuduğum karakteri ekle
+        }
+        //açık parantezleri stack e ekle(push)
+        // When we reach a closing one, start popping off operators until we run into the opening parenthesis.
+        //kapa paranteze eriştiğimde,açık paranteze kadar operatorleri cikar (pop) (
+        else if (*k_Ptr == '('){ stackDepo.push(*k_Ptr); } //aç parantez işe stack ekle 
+        else if (*k_Ptr == ')'){ //kapa parantez ise
+            while (!stackDepo.empty()) { //stack boş değilse
+                if (stackDepo.top() == '(') { stackDepo.pop(); break; } //stack topdaki karakter aç parantez ise pop et ve döngüden çık
+                postFixifadem +=stackDepo.top();  //stack deki karakteri postfix stringime ekle
+                stackDepo.pop(); //eklediğim karakteri stack den çıkar
+            }
+        }
+        k_Ptr++; //sonraki karakterime geç
+    }
+	
+	//stack de çıkarılacak operator kalmadığında hepsini stack den çıkar ve postfix stringime yaz(ekle)
+    while (!stackDepo.empty()){
+        postFixifadem +=stackDepo.top();
+        stackDepo.pop();
+    }
+	
+    //infix-postfix cözümünü göster
+    cout<<"Postfix cevrilmis hali : "<<postFixifadem<< endl;
+    
+     int sd;
+    cout<<"devam etmek istiyor musun? Hayir icin 0 , Evet icin 1 e bas. "<<endl;
+    cin>>sd;
+    if(sd==0){
+    	system("pause");
+	}
+	else if(sd==1){
+	 	postFixifadem="";
+		goto anaislem;
+	}
+	else{
+		cout<<" demir atiyorum yalnizliga ... "<<endl;
+		system("pause");
+	}
+    return 0;
+}
