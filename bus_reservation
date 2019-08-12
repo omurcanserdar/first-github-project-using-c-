@@ -1,0 +1,487 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <vector>
+using namespace std;
+
+//CLASS1
+class Veritabani {
+	//PROTECTED
+protected:
+	//DOSYAYA YAZMA
+	void dosyaya_yaz(string dosya_adi, string satir) {
+		fstream dosya;
+		dosya.open(dosya_adi, ios::app);
+		dosya << satir << endl;
+		dosya.close();
+	}
+
+	//DOSYAYI LISTELEME
+	void dosyayi_listele(string dosya_adi) {
+		string line;
+		ifstream reader(dosya_adi);
+		if (reader.is_open()) {
+			int sayac = 0;
+			cout << "Veriler Listeleniyor...\n" << endl;
+			while (reader.good()) {
+				getline(reader, line);
+				cout << line << endl;
+				sayac++;
+			}
+			cout << "Veriler Listelendi\n" << endl;
+		}
+	}
+
+	//ARA İŞLEMİ (VERI ILK PARCA, DONEN DEGER SATIR NOSU)
+	int dosyada_bul(string dosya_adi, string veri) {
+		string okunan;
+		int satir = 1;
+		fstream oku;
+		oku.open(dosya_adi, ios::in);
+		while (!oku.eof())
+		{
+			getline(oku, okunan);
+			string ilk_parca = okunan.substr(0, okunan.find(" "));
+			if (veri == ilk_parca)
+				return satir;
+			satir++;
+		}
+		oku.close();
+		return 0;
+	}
+};
+
+//CLASS2
+class Veritabani2 {
+	//PROTECTED
+protected:
+	//DOSYADAN SILME
+	void dosyadan_sil(string dosya_adi, int satir_no) {
+		string okunan;
+		int satir = 1;
+		vector<string> gecici; //list gibi - tek tip veri alır
+		fstream oku;
+		oku.open(dosya_adi, ios::in);
+		while (!oku.eof())
+		{
+			getline(oku, okunan);
+			if (satir != satir_no && okunan != "")
+				gecici.push_back(okunan); //silinmek istenen harici listeye eklendi
+			satir++;
+		}
+		oku.close(); //istenmeyen satır haricini listeye ekledim
+
+		//istenmeyen satır haricini dosyaya yazdım
+		fstream yaz;
+		yaz.open(dosya_adi, ios::out);
+		for (int i = 0; i < gecici.size(); i++)
+			yaz << gecici[i] << endl;
+		yaz.close();
+		cout << "silme işlemi tamamlandı" << endl;
+	}
+	//DOSYADA GUNCELLEME
+	void dosyada_guncelle(string dosya_adi, int satir_no, string yeni_satir) {
+		//GUNCELLEME ISLEMI
+	}
+};
+
+
+class Musteri : Veritabani, Veritabani2 {
+	//get ve set ile erişebilirim
+private:
+	string musteri_ad;
+	string musteri_soyad;
+	int tc;
+	int tel;
+
+public:
+	Musteri() {
+		musteri_ad = "";
+		musteri_soyad = "";
+		tc = 0;
+		tel = 0;
+	}
+	Musteri(int tcx, string ad, string soyad, int telx) {
+		tc = tcx;
+		musteri_ad = ad;
+		musteri_soyad = soyad;
+		tel = telx;
+	}
+
+	~Musteri() {
+		//deconstr
+	}
+	//temel sınıf(lar)dan gelen metodları kullandım
+	void musteriEkle(string satir) {
+		dosyaya_yaz("deneme.txt", satir);
+	}
+	void musteriListele() {
+		dosyayi_listele("deneme.txt");
+	}
+	int musteriBul(string TC) {
+		return dosyada_bul("deneme.txt", TC);
+	}
+	void musteriSil(int satir_no) {
+		dosyadan_sil("deneme.txt", satir_no);
+	}
+
+	//Get ve set
+	void setMusteriTC(int ptc) {
+		tc = ptc;
+	}
+	void setMusteriAd(string pad) {
+		musteri_ad = pad;
+	}
+	void setMusteriSoyad(string psoyad) {
+		musteri_soyad = psoyad;
+	}
+	void setMusteriTel(int ptel) {
+		tel = ptel;
+	}
+	int getMusteriTC() {
+		return this->tc;
+	}
+	string getMusteriAd() {
+		return this->musteri_ad;
+	}
+	string getMusteriSoyad() {
+		return this->musteri_soyad;
+	}
+	int getMusteriTel() {
+		return this->tel;
+	}
+};
+
+bool dosyaMusteriEkle(Musteri pm) {
+	string satir = to_string(pm.getMusteriTC()) + " " + pm.getMusteriAd() + " " + pm.getMusteriSoyad() + " " + to_string(pm.getMusteriTel());
+	pm.musteriEkle(satir);
+	return true;
+}
+
+void dosyaMusteriOku() {
+	Musteri m;
+	m.musteriListele();
+}
+
+void dosyaMusteriSil() {
+	cin.ignore();
+	string silinecek, okunan;
+	cout << "Silinecek kisinin TC numarasini girin : ";
+	getline(cin, silinecek);
+	Musteri m;
+	m.musteriSil(m.musteriBul(silinecek));
+}
+
+//kullanadamadım başaramadım
+void dosyaMusteriArama()
+{
+	string line;
+	ifstream reader("deneme.txt");
+	if (reader.is_open()) {
+		cout << "Silme işlemi için aranacak tc gir: ";
+		string tc; cin >> tc;
+		int sayac = 0;
+		while (reader.good()) {
+			getline(reader, line);
+			sayac++;
+			size_t pos = line.find(tc);
+			if (pos != string::npos) {
+				cout << line << endl;
+				cout << "Buldum! Silmek İçin E'ye Çıkmak İçin H'ye bas: ";
+				char c; cin >> c;
+				if (c == 'e') {
+					//line.replace(line.find(deleteline),deleteline.length(),"");
+					line.replace(pos, line.length(), "");
+				}
+			}
+			reader.close();
+		}
+	}
+}
+
+string* adminDosyaOku() {
+	fstream dosyaoku;
+	dosyaoku.open("admin.txt", ios::in);
+	string okunan;
+	while (!dosyaoku.eof()) {
+		getline(dosyaoku, okunan);
+		string aa = okunan.substr(0, 1);
+		string as = okunan.substr(2, 3);
+		string* a = new string[2];
+		a[0] = aa;
+		a[1] = as;
+		dosyaoku.close();
+		return a;
+	}
+}
+
+class Sefer : Veritabani, Veritabani2 {
+private:
+	int sefer_id;
+	string ad;
+	string sefer_tarih;
+
+public:
+	Sefer() {
+		sefer_id = 0;
+		ad = "";
+		sefer_tarih = "";
+	}
+
+	Sefer(int sid, string sad, string starih) {
+		sefer_id = sid;
+		ad = sad;
+		sefer_tarih = starih;
+	}
+
+	~Sefer() {
+	}
+
+	void seferEkle(string satir) {
+		dosyaya_yaz("sefer.txt", satir);
+	}
+
+	void seferListele() {
+		dosyayi_listele("sefer.txt");
+	}
+
+	//Get ve set (sefer)
+	void setSeferId(int sefer_id) {
+		this->sefer_id = sefer_id;
+	}
+	void setAd(string ad) {
+		this->ad = ad;
+	}
+	void setSeferTarihi(string sefer_tarih) {
+		this->sefer_tarih = sefer_tarih;
+	}
+	int getSeferId() {
+		return this->sefer_id;
+	}
+	string getAd() {
+		return this->ad;
+	}
+	string getSeferTarihi() {
+		return this->sefer_tarih;
+	}
+};
+
+bool dosyaSeferEkle(Sefer ps) {
+	string satir = to_string(ps.getSeferId()) + " " + ps.getAd() + " " + ps.getSeferTarihi();
+	ps.seferEkle(satir);
+	return true;
+}
+
+void dosyaSeferOku() {
+	Sefer s;
+	s.seferListele();
+}
+
+class Bilet : Veritabani {
+private:
+	int biletkod;
+	int musteriTC;
+	int seferkod;
+	int koltukno;
+	string durum;
+
+public:
+	Bilet(int pbiletkod, int pmustc, int pseferkod, int pkoltukno, string pdurum) {
+		biletkod = pbiletkod;
+		musteriTC = pmustc;
+		seferkod = pseferkod;
+		koltukno = pkoltukno;
+		durum = pdurum;
+	}
+
+	~Bilet() {
+		//YIKICI
+	}
+
+	void biletEkle(string satir) {
+		dosyaya_yaz("bilet.txt", satir);
+	}
+
+	//Get ve set (bilet)
+	void setBiletKod(int biletkod) {
+		this->biletkod = biletkod;
+	}
+	void setMusteriTC(int musteriTC) {
+		this->musteriTC = musteriTC;
+	}
+	void setSeferKod(int seferkod) {
+		this->seferkod = seferkod;
+	}
+	void setKoltukNo(int koltukno) {
+		this->koltukno = koltukno;
+	}
+	void setDurum(string durum) {
+		this->durum = durum;
+	}
+	int getBiletKod() {
+		return this->biletkod;
+	}
+	int getMusteriTC() {
+		return this->musteriTC;
+	}
+	int getSeferKod() {
+		return this->seferkod;
+	}
+	int getKoltukNo() {
+		return this->koltukno;
+	}
+	string getDurum() {
+		return this->durum;
+	}
+};
+
+bool dosyaBiletEkle(Bilet pb) {
+	string satir = to_string(pb.getBiletKod()) + " " + to_string(pb.getMusteriTC()) + " " + to_string(pb.getSeferKod()) + " " + to_string(pb.getKoltukNo()) + " " + pb.getDurum();
+	pb.biletEkle(satir);
+	return true;
+}
+
+int main(int argc, char** argv) {
+	setlocale(LC_ALL, "Turkish");//türkçe karakter için
+
+	/*ofstream dosya;
+	dosya.open("deneme.txt");
+
+	for (int x = 0; x <= 5; x++) {
+		Musteri m;
+		m.setMusteriTC(412940 + x);
+		m.setMusteriAd("ömür");
+		m.setMusteriSoyad("serdar");
+		m.setMusteriTel(541347 + x);
+		dosyaMusteriEkle(m);
+	}*/
+
+	cout << " -- Düzce Seyahat --" << endl;
+
+girisyapmamesaj:
+	cout << "Giriş Yapmak İçin '0' a basın :" << endl;
+	int admindeger;
+	cin >> admindeger;
+
+	if (admindeger == 0) {
+	admingiris:
+		cout << "Admin ad Gir: "; string adminad; cin >> adminad;
+		cout << "Admin Şifre Gir: "; string adminsifre; cin >> adminsifre;
+		string* veriler = adminDosyaOku();
+		if (veriler[0] == adminad && veriler[1] == adminsifre) {
+			cout << "giriş başarıyla yapıldı :)" << endl;
+			goto operasyonmesajlar;
+		}
+		else {
+			cout << "giriş yapılamadı sorun var :(" << endl;
+			goto admingiris;
+		}
+	}
+	else {
+		goto girisyapmamesaj;
+	}
+
+operasyonmesajlar:
+	cout << endl;
+	cout << "Müşteri Eklemek için '1'\nMüşteri Silmek için '2'\nMüşteri Listelemek için '3' bas" << endl;
+	cout << "Sefer Eklemek için '4'\nSefer Silmek için '5'\nSefer Listelemek için '6' bas" << endl;
+	cout << "Bilet Eklemek için '7'\nBilet Silmek için '8'\nBilet Listelemek için '9' bas" << endl;
+
+	int deger;
+	cin >> deger;
+
+	if (deger == 1) {
+		cout << "Müşteri TC Gir: "; int mustc; cin >> mustc;
+		cout << "Müşteri Ad Gir: "; string musad; cin >> musad;
+		cout << "Müşteri Soyad Gir: "; string mussoyad; cin >> mussoyad;
+		cout << "Müşteri Tel Gir: "; int mustel; cin >> mustel;
+		Musteri pm(mustc, musad, mussoyad, mustel);
+
+		if (dosyaMusteriEkle(pm) == true)
+			cout << "Müşteri Eklendi" << endl;
+	tamamdevam3:
+		cout << "Devam Etmek İstiyor Musunuz? Evet ise 'e'ye Hayır ise 'h'ye bas: ";
+		char eh; cin >> eh;
+		if (eh == 'e') { goto operasyonmesajlar; }
+		else if (eh == 'h') { exit(0); }
+		else { goto tamamdevam3; }
+	}
+	else if (deger == 2) {
+		// dosyaMusteriArama();
+		dosyaMusteriSil();
+	tamamdevam9:
+		cout << "Devam Etmek İstiyor Musunuz? Evet ise 'e'ye Hayır ise 'h'ye bas: ";
+		char eh; cin >> eh;
+		if (eh == 'e') { goto operasyonmesajlar; }
+		else if (eh == 'h') { exit(0); }
+		else { goto tamamdevam9; }
+	}
+	else if (deger == 3) {
+		dosyaMusteriOku();
+	tamamdevam2:
+		cout << "Devam Etmek İstiyor Musunuz? Evet ise 'e'ye Hayır ise 'h'ye bas: ";
+		char eh; cin >> eh;
+		if (eh == 'e') { goto operasyonmesajlar; }
+		else if (eh == 'h') { exit(0); }
+		else { goto tamamdevam2; }
+	}
+	else if (deger == 4) {
+		cout << "Sefer Kod Gir: "; int seferkod; cin >> seferkod;
+		cout << "Sefer Ad Gir: "; string seferad; cin >> seferad;
+		cout << "Sefer Tarhi Gir (gg/aa/yyyy): "; string sefertarih; cin >> sefertarih;
+		Sefer s(seferkod, seferad, sefertarih);
+
+		if (dosyaSeferEkle(s) == true)
+			cout << "Sefer Eklendi" << endl;
+	tamamdevam:
+		cout << "Devam Etmek İstiyor Musunuz? Evet ise 'e'ye Hayır ise 'h'ye bas: ";
+		char eh; cin >> eh;
+		if (eh == 'e') { goto operasyonmesajlar; }
+		else if (eh == 'h') { exit(0); }
+		else { goto tamamdevam; }
+	}
+
+
+	else if (deger == 5) {
+
+			cout << "Sefer Silme İşlemi (-)" << endl;
+	tamamdevam55:
+		cout << "Devam Etmek İstiyor Musunuz? Evet ise 'e'ye Hayır ise 'h'ye bas: ";
+		char eh; cin >> eh;
+		if (eh == 'e') { goto operasyonmesajlar; }
+		else if (eh == 'h') { exit(0); }
+		else { goto tamamdevam55; }
+	}
+
+	else if (deger == 6) {
+		dosyaSeferOku();
+	tamamdevam4:
+		cout << "Devam Etmek İstiyor Musunuz? Evet ise 'e'ye Hayır ise 'h'ye bas: ";
+		char eh; cin >> eh;
+		if (eh == 'e') { goto operasyonmesajlar; }
+		else if (eh == 'h') { exit(0); }
+		else { goto tamamdevam4; }
+	}
+	else if (deger == 7) {
+		int bkod; cout << "BiletKod Gir: ";  cin >> bkod;
+		int bmustc; cout << "Müşteri TC Gir: ";  cin >> bmustc;
+		int bskod; cout << "Sefer Kod Gir: ";  cin >> bskod;
+		int koltuk; cout << "Koltuk No Gir: ";  cin >> koltuk;
+		string bdurum; cout << "Bilet Durumu: ";  cin >> bdurum;
+		Bilet pbn(bkod, bmustc, bskod, koltuk, bdurum);
+
+		if (dosyaBiletEkle(pbn) == true)
+			cout << "Bilet Eklendi" << endl;
+	tamamdevam7:
+		cout << "Devam Etmek İstiyor Musunuz? Evet ise 'e'ye Hayır ise 'h'ye bas: ";
+		char eh; cin >> eh;
+		if (eh == 'e') { goto operasyonmesajlar; }
+		else if (eh == 'h') { exit(0); }
+		else { goto tamamdevam7; }
+	}
+	else {
+		cout << "girdiğiniz değerde yapılacak işlem yok !" << endl;
+		goto operasyonmesajlar;
+	}
+	return 0;
+}
