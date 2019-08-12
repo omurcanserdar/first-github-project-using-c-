@@ -1,0 +1,66 @@
+#include<iostream> 
+using namespace std; 
+ 
+struct node{ 
+ int veri;
+ node *prev;
+ node *next;
+}; 
+
+void ListeyeEkle(node *r, int paramveri){ 
+ node *yrd;  
+ yrd = r;
+ while(yrd->next != NULL)
+ yrd = yrd->next;
+ 
+ yrd->next=new node;
+ yrd->next->next=NULL;
+ yrd->next->veri = paramveri;
+ yrd->next->prev=yrd;
+ yrd = NULL;
+ delete yrd; 
+}
+
+void ekranaYaz(node *r){
+ while (r!=NULL){    
+ cout<< r->veri<< " ";
+ r=r->next;
+}
+//system("pause");
+} 
+
+node *tersCevir(node *r,node *paramprev){
+    node *geciciCevrilmisListe;
+    if(r->next==NULL){
+        r->next=paramprev;
+        paramprev->next=NULL;
+        return r;
+    }else {
+        geciciCevrilmisListe = tersCevir(r->next,r);
+        r->next = paramprev;
+        return geciciCevrilmisListe;
+    }
+}
+
+int main(){ 
+node *anaListem;
+anaListem = new node;
+anaListem->veri = 61;
+ListeyeEkle(anaListem, 62);
+ListeyeEkle(anaListem, 63); 
+ListeyeEkle(anaListem, 64);
+ListeyeEkle(anaListem, 65);
+ListeyeEkle(anaListem, 66); 
+
+cout<<"-------ilk listeyi yazmaya basliyorum------"<<endl;
+ekranaYaz(anaListem); 
+cout<<"\n-------ilk listeyi yazmayi bitirdim------"<<endl;
+
+node *yeniListem;
+yeniListem = tersCevir(anaListem, NULL);
+
+cout<<"-------ikinci listeyi yazmaya basliyorum------"<<endl;
+ekranaYaz(yeniListem);
+cout<<"\n-------ikinci listeyi yazmayi bitirdim------"<<endl;
+return 0;
+}
